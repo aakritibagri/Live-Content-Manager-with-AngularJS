@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html ng-app="dynamicApp">
+<head>
+    <title>Live Content Manager with AngularJS</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2089f3, #1565c0);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .content-box {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .section-title {
+            color: #1976d2;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .dynamic-item {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: transform 0.2s;
+        }
+        .dynamic-item:hover {
+            transform: translateX(5px);
+        }
+        .action-buttons {
+            margin-top: 10px;
+        }
+        .action-buttons button {
+            margin-right: 5px;
+        }
+        .stats {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .highlight {
+            background-color: #fff3e0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" ng-controller="MainController">
+    <!-- Content Addition Section -->
+    <div class="content-box">
+        <h2 class="section-title">Add Dynamic Content</h2>
+        <div class="form-group">
+            <input type="text" class="form-control" ng-model="newContent.title" placeholder="Enter title">
+        </div>
+        <div class="form-group">
+            <textarea class="form-control" ng-model="newContent.description" placeholder="Enter description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+            <select class="form-control" ng-model="newContent.category">
+                <option value="">Select Category</option>
+                <option ng-repeat="category in categories" value="{{category}}">{{category}}</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" ng-click="addContent()">Add Content</button>
+    </div>
+
+    <!-- Dynamic Content Display -->
+    <div class="content-box">
+        <h2 class="section-title">Dynamic Content</h2>
+        
+        <!-- Search and Filter -->
+        <div class="form-group">
+            <input type="text" class="form-control" ng-model="searchText" placeholder="Search content...">
+        </div>
+        
+        <!-- Content List -->
+        <div class="dynamic-item" ng-repeat="item in contentList | filter:searchText" 
+             ng-class="{'highlight': item.isHighlighted}">
+            <h4>{{item.title}}</h4>
+            <p>{{item.description}}</p>
+            <span class="badge badge-info">{{item.category}}</span>
+            <div class="action-buttons">
+                <button class="btn btn-sm btn-warning" ng-click="editContent(item)">Edit</button>
+                <button class="btn btn-sm btn-danger" ng-click="deleteContent(item)">Delete</button>
+                <button class="btn btn-sm btn-secondary" ng-click="toggleHighlight(item)">
+                    {{item.isHighlighted ? 'Remove Highlight' : 'Highlight'}}
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats">
+            <p>Total Items: {{contentList.length}}</p>
+            <p>Highlighted Items: {{getHighlightedCount()}}</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    angular.module('dynamicApp', [])
+        .controller('MainController', function($scope) {
+            // Categories
+            $scope.categories = ['Technology', 'Business', 'Education', 'Entertainment'];
+            
+            // Content List
+            $scope.contentList = [
+                {
+                    title: 'Getting Started with AngularJS',
+                    description: 'Learn the basics of AngularJS framework',
+                    category: 'Technology',
+                    isHighlighted: false
+                },
+                {
+                    title: 'Business Strategy 101',
+                    description: 'Essential business strategies for success',
+                    category: 'Business',
+                    isHighlighted: false
+                }
+            ];
+
+            // New Content Model
+            $scope.newContent = {
+                title: '',
+                description: '',
+                category: '',
+                isHighlighted: false
+            };
+
+            // Add Content
+            $scope.addContent = function() {
+                if ($scope.newContent.title && $scope.newContent.description && $scope.newContent.category) {
+                    $scope.contentList.push({
+                        title: $scope.newContent.title,
+                        description: $scope.newContent.description,
+                        category: $scope.newContent.category,
+                        isHighlighted: false
+                    });
+                    // Reset form
+                    $scope.newContent = {
+                        title: '',
+                        description: '',
+                        category: '',
+                        isHighlighted: false
+                    };
+                }
+            };
+
+            // Edit Content
+            $scope.editContent = function(item) {
+                item.editing = true;
+                item.tempTitle = item.title;
+                item.tempDescription = item.description;
+                
+                var newTitle = prompt("Edit title:", item.title);
+                var newDescription = prompt("Edit description:", item.description);
+                
+                if (newTitle !== null && newDescription !== null) {
+                    item.title = newTitle;
+                    item.description = newDescription;
+                }
+            };
+
+            // Delete Content
+            $scope.deleteContent = function(item) {
+                var index = $scope.contentList.indexOf(item);
+                if (index > -1 && confirm('Are you sure you want to delete this item?')) {
+                    $scope.contentList.splice(index, 1);
+                }
+            };
+
+            // Toggle Highlight
+            $scope.toggleHighlight = function(item) {
+                item.isHighlighted = !item.isHighlighted;
+            };
+
+            // Get Highlighted Count
+            $scope.getHighlightedCount = function() {
+                return $scope.contentList.filter(function(item) {
+                    return item.isHighlighted;
+                }).length;
+            };
+        });
+</script>
+
+</body>
+</html>
