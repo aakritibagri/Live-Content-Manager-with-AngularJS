@@ -18,7 +18,7 @@ A dynamic, responsive web application built using **AngularJS** that allows user
 ├── index.html      <br>
 ├── README.md       <br>
 ├── package.json
-
+<img src = "image.png" width = "30%">
 ## 🚀 Getting Started
 
 ### Prerequisites
