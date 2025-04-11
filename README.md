@@ -17,7 +17,7 @@ A dynamic, responsive web application built using **AngularJS** that allows user
 ## live-content-manager-angularjs
 ├── index.html      <br>
 ├── README.md       <br>
-├── package.json
+├── package.json<br>
 <img src = "image.png" width = "30%">
 ## 🚀 Getting Started
 
